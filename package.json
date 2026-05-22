@@ -23,6 +23,14 @@
     "dist/index.d.cts"
   ],
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/appler1009/typeset-p.git"
+  },
+  "homepage": "https://github.com/appler1009/typeset-p#readme",
+  "bugs": {
+    "url": "https://github.com/appler1009/typeset-p/issues"
+  },
   "sideEffects": true,
   "scripts": {
     "build": "tsup",

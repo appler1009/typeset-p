@@ -1,5 +1,7 @@
 # typeset-p
 
+[Repository](https://github.com/appler1009/typeset-p)
+
 A Web Component for professional-quality paragraph typesetting in the browser. Drop it in wherever you render body text and get Knuth-Plass optimal line-breaking, smart quotes, soft hyphenation, and optical margin alignment — all without touching your existing markup or styles.
 
 ```html
@@ -43,11 +45,21 @@ The `mode` attribute controls how much processing is applied.
 |-----------|------|---------|-------------|
 | `mode` | `"default"` \| `"browser"` \| `"custom"` | `"default"` | Processing mode |
 | `align` | `"left"` \| `"justify"` \| `"right"` | `"left"` | Text alignment |
-| `font` | string | inherited from CSS | Font family used for canvas measurement, e.g. `"Lora, Georgia, serif"`. Must be a resolved family name — CSS variables are not evaluated on canvas. If omitted, read from `getComputedStyle`; CSS-only changes won't trigger a re-render. |
-| `font-size` | string | inherited from CSS | Font size passed to canvas measurement, e.g. `"18px"` |
-| `hyphenate` | `"false"` to disable | enabled | Soft hyphenation for words ≥ 8 characters |
-| `smart-quotes` | `"false"` to disable | enabled | Converts `"straight"` quotes to `"curly"` quotes, `--` to em dashes, `...` to ellipses |
-| `hanging-punctuation` | `"false"` to disable | enabled | Optical margin alignment — pulls leading quotes into the left margin |
+| `font` | string | inherited from CSS | Canvas measurement font family |
+| `font-size` | string | inherited from CSS | Canvas measurement font size |
+| `hyphenate` | `"false"` to disable | enabled | Soft hyphenation |
+| `smart-quotes` | `"false"` to disable | enabled | Typography normalization |
+| `hanging-punctuation` | `"false"` to disable | enabled | Optical margin alignment |
+
+**`font`** — Font family used for canvas measurement, e.g. `"Lora, Georgia, serif"`. Must be a resolved family name — CSS variables are not evaluated on canvas. If omitted, read from `getComputedStyle`; CSS-only changes won't trigger a re-render.
+
+**`font-size`** — Font size passed to canvas measurement, e.g. `"18px"`.
+
+**`hyphenate`** — Soft hyphenation for words ≥ 8 characters.
+
+**`smart-quotes`** — Converts `"straight"` quotes to `"curly"` quotes, `--` to em dashes, `...` to ellipses.
+
+**`hanging-punctuation`** — Pulls leading quotes into the left margin for optical alignment.
 
 ## Notes for `custom` mode
 
