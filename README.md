@@ -32,10 +32,10 @@ The `mode` attribute controls how much processing is applied.
 | Mode | What it does |
 |------|-------------|
 | `default` | Plain browser rendering, no enhancement |
-| `browser` | CSS `text-wrap: pretty`, `hyphens: auto`, `hanging-punctuation: first last` |
-| `custom` | Full pipeline: smart quotes → soft hyphenation → Knuth-Plass line-breaking → per-line word spacing |
+| `browser` | Native CSS only: `text-wrap: pretty`, `hyphens: auto`, `hanging-punctuation: first last`. No JavaScript runs — quality depends entirely on what the browser supports. |
+| `custom` | Full JS pipeline: smart quotes → soft hyphenation → Knuth-Plass line-breaking → per-line word spacing |
 
-`custom` mode produces the best results but requires JavaScript and a loaded font. `browser` mode is a lightweight CSS-only fallback with no JS overhead.
+`custom` produces the best results but requires JavaScript and a loaded font. `browser` is a zero-JS fallback that delegates everything to the browser's own typesetting — useful as a server-rendered default or for contexts where JS is unavailable.
 
 ## Attributes
 
