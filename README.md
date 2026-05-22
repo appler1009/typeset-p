@@ -43,11 +43,27 @@ The `mode` attribute controls how much processing is applied.
 |-----------|------|---------|-------------|
 | `mode` | `"default"` \| `"browser"` \| `"custom"` | `"default"` | Processing mode |
 | `align` | `"left"` \| `"justify"` \| `"right"` | `"left"` | Text alignment |
-| `font` | string | inherited from CSS | Font family passed to canvas measurement, e.g. `"Lora, Georgia, serif"`. Set this explicitly in `custom` mode — if omitted, the value is read from `getComputedStyle`, but CSS-only font changes (e.g. a class swap) won't trigger a re-render unless the container also resizes. |
+| `font` | string | inherited from CSS | Font family used for canvas measurement, e.g. `"Lora, Georgia, serif"`. Must be a resolved family name — CSS variables are not evaluated on canvas. If omitted, read from `getComputedStyle`; CSS-only changes won't trigger a re-render. |
 | `font-size` | string | inherited from CSS | Font size passed to canvas measurement, e.g. `"18px"` |
 | `hyphenate` | `"false"` to disable | enabled | Soft hyphenation for words ≥ 8 characters |
 | `smart-quotes` | `"false"` to disable | enabled | Converts `"straight"` quotes to `"curly"` quotes, `--` to em dashes, `...` to ellipses |
 | `hanging-punctuation` | `"false"` to disable | enabled | Optical margin alignment — pulls leading quotes into the left margin |
+
+## Notes for `custom` mode
+
+**`display: block` is set automatically.** The component sets `display: block` on itself before measuring line width, so you don't need to add it in CSS. If you need a different outer layout (e.g. `display: grid`), wrap it in a container element instead.
+
+**Pass a resolved font family via the `font` attribute.** The Knuth-Plass pipeline measures glyph widths on a canvas using the value of `font`. CSS variables and computed values are read from `getComputedStyle` as a fallback, but `var(--my-font)` will not resolve on canvas — pass the actual family string:
+
+```html
+<!-- good -->
+<typeset-p mode="custom" font="Lora, Georgia, serif">…</typeset-p>
+
+<!-- won't measure correctly — canvas can't resolve CSS variables -->
+<typeset-p mode="custom" style="font-family: var(--body-font)">…</typeset-p>
+```
+
+**`align` scope by mode.** The `align` attribute has full effect in `custom` mode (line-breaking + per-line CSS). In `browser` mode the component sets the corresponding CSS itself. In `default` mode it sets `text-align` on the element. In all cases, `align="justify"` only produces true justified text in `custom` mode — browser justification via `text-align: justify` alone tends to be uneven and is not applied in `browser` mode.
 
 ## CSS for optical margin alignment
 

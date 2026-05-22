@@ -63,6 +63,8 @@ export class TypesetP extends _HTMLElement {
 
   private _resizeObserver: ResizeObserver | null = null;
   private _resizeDebounce: ReturnType<typeof setTimeout> | null = null;
+  private _contentObserver: MutationObserver | null = null;
+  private _selfMutating = false;
   private _version = 0;
   private _containerWidth = 0;
   private _computedFont = '';
@@ -72,6 +74,7 @@ export class TypesetP extends _HTMLElement {
     this._rawText = this.textContent ?? '';
     this._setupResizeObserver();
     this._setupFontListener();
+    this._setupContentObserver();
     this._run();
   }
 
@@ -146,11 +149,25 @@ export class TypesetP extends _HTMLElement {
     document.fonts.addEventListener('loadingdone', this._onFontsLoaded);
   }
 
+  private _setupContentObserver() {
+    if (this._contentObserver) return;
+    this._contentObserver = new MutationObserver(() => {
+      if (this._selfMutating) return;
+      const text = this.textContent ?? '';
+      if (text === this._rawText) return;
+      this._rawText = text;
+      this._run();
+    });
+    this._contentObserver.observe(this, { childList: true, characterData: true, subtree: true });
+  }
+
   private _cleanup() {
     this._resizeObserver?.disconnect();
     this._resizeObserver = null;
     if (this._resizeDebounce) clearTimeout(this._resizeDebounce);
     this._resizeDebounce = null;
+    this._contentObserver?.disconnect();
+    this._contentObserver = null;
     this._version++;
   }
 
@@ -269,6 +286,8 @@ export class TypesetP extends _HTMLElement {
     if (version !== this._version) return;
 
     // Step 9: inject into the element
+    this._selfMutating = true;
     this.innerHTML = html;
+    queueMicrotask(() => { this._selfMutating = false; });
   }
 }
