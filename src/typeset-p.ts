@@ -180,12 +180,16 @@ export class TypesetP extends _HTMLElement {
   }
 
   private _renderBrowser() {
+    const justify = this._align === 'justify';
     this.style.cssText = [
       'display:block',
-      'text-wrap:pretty',
+      // text-wrap:pretty and text-align:justify conflict — pretty wins and
+      // suppresses justification, so switch to wrap when justify is requested.
+      justify ? 'text-wrap:wrap' : 'text-wrap:pretty',
+      justify ? 'text-align:justify' : '',
       'hyphens:auto',
       'hanging-punctuation:first last',
-    ].join(';');
+    ].filter(Boolean).join(';');
     this.textContent = this._rawText;
   }
 
