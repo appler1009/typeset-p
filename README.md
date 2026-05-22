@@ -43,7 +43,7 @@ The `mode` attribute controls how much processing is applied.
 |-----------|------|---------|-------------|
 | `mode` | `"default"` \| `"browser"` \| `"custom"` | `"default"` | Processing mode |
 | `align` | `"left"` \| `"justify"` \| `"right"` | `"left"` | Text alignment |
-| `font` | string | inherited from CSS | Font family passed to canvas measurement, e.g. `"Lora, Georgia, serif"` |
+| `font` | string | inherited from CSS | Font family passed to canvas measurement, e.g. `"Lora, Georgia, serif"`. Set this explicitly in `custom` mode — if omitted, the value is read from `getComputedStyle`, but CSS-only font changes (e.g. a class swap) won't trigger a re-render unless the container also resizes. |
 | `font-size` | string | inherited from CSS | Font size passed to canvas measurement, e.g. `"18px"` |
 | `hyphenate` | `"false"` to disable | enabled | Soft hyphenation for words ≥ 8 characters |
 | `smart-quotes` | `"false"` to disable | enabled | Converts `"straight"` quotes to `"curly"` quotes, `--` to em dashes, `...` to ellipses |

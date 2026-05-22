@@ -65,16 +65,19 @@ export class TypesetP extends _HTMLElement {
   private _resizeDebounce: ReturnType<typeof setTimeout> | null = null;
   private _version = 0;
   private _containerWidth = 0;
+  private _computedFont = '';
   private _rawText = '';
 
   connectedCallback() {
     this._rawText = this.textContent ?? '';
     this._setupResizeObserver();
+    this._setupFontListener();
     this._run();
   }
 
   disconnectedCallback() {
     this._cleanup();
+    document.fonts.removeEventListener('loadingdone', this._onFontsLoaded);
   }
 
   attributeChangedCallback() {
@@ -120,14 +123,27 @@ export class TypesetP extends _HTMLElement {
       if (this._resizeDebounce) clearTimeout(this._resizeDebounce);
       this._resizeDebounce = setTimeout(() => {
         const w = this.clientWidth;
-        if (w !== this._containerWidth) {
+        const f = this.getAttribute('font') ?? getComputedStyle(this).fontFamily;
+        const changed = w !== this._containerWidth || f !== this._computedFont;
+        if (changed) {
           this._containerWidth = w;
+          this._computedFont = f;
           this._run();
         }
       }, 150);
     });
     this._resizeObserver.observe(this);
     this._containerWidth = this.clientWidth;
+    this._computedFont = this.getAttribute('font') ?? getComputedStyle(this).fontFamily;
+  }
+
+  // Arrow function so it can be passed to addEventListener and removed by reference.
+  private _onFontsLoaded = () => {
+    if (this._mode === 'custom') this._run();
+  };
+
+  private _setupFontListener() {
+    document.fonts.addEventListener('loadingdone', this._onFontsLoaded);
   }
 
   private _cleanup() {
@@ -182,6 +198,7 @@ export class TypesetP extends _HTMLElement {
     const fontSize = this._fontSize;
     const align = this._align;
     const containerWidth = this.clientWidth;
+    this._computedFont = font;
 
     if (containerWidth <= 0) return;
 
