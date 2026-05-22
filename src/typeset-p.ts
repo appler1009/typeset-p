@@ -34,7 +34,7 @@ import {
 export type TypesetPMode = 'default' | 'browser' | 'custom';
 export type TypesetPAlign = 'left' | 'justify' | 'right';
 
-/** All attributes accepted by <typeset-p>. */
+/** All attributes accepted by <typeset-p>. Omitting mode defaults to "custom". */
 export interface TypesetPAttributes {
   mode?: TypesetPMode;
   align?: TypesetPAlign;
@@ -91,8 +91,8 @@ export class TypesetP extends _HTMLElement {
 
   private get _mode(): Mode {
     const v = this.getAttribute('mode');
-    if (v === 'browser' || v === 'custom') return v;
-    return 'default';
+    if (v === 'default' || v === 'browser') return v;
+    return 'custom';
   }
 
   private get _align(): Align {

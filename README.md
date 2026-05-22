@@ -2,7 +2,7 @@
 
 [Repository](https://github.com/appler1009/typeset-p)
 
-A Web Component for professional-quality paragraph typesetting in the browser. Drop it in wherever you render body text and get Knuth-Plass optimal line-breaking, smart quotes, soft hyphenation, and optical margin alignment — all without touching your existing markup or styles.
+A Web Component for paragraph typesetting in the browser, aiming for professional quality. Drop it in wherever you render body text and get Knuth-Plass optimal line-breaking, smart quotes, soft hyphenation, and optical margin alignment — all without touching your existing markup or styles.
 
 ```html
 <typeset-p mode="custom" align="justify">
@@ -33,17 +33,17 @@ The `mode` attribute controls how much processing is applied.
 
 | Mode | What it does |
 |------|-------------|
-| `default` | Plain browser rendering, no enhancement |
+| `custom` | **Default.** Full JS pipeline: smart quotes → soft hyphenation → Knuth-Plass line-breaking → per-line word spacing |
 | `browser` | Native CSS only: `text-wrap: pretty`, `hyphens: auto`, `hanging-punctuation: first last`. No JavaScript runs — quality depends entirely on what the browser supports. |
-| `custom` | Full JS pipeline: smart quotes → soft hyphenation → Knuth-Plass line-breaking → per-line word spacing |
+| `default` | Plain browser rendering, no enhancement |
 
-`custom` produces the best results but requires JavaScript and a loaded font. `browser` is a zero-JS fallback that delegates everything to the browser's own typesetting — useful as a server-rendered default or for contexts where JS is unavailable.
+`custom` is the default and produces the best results. If you hit issues (font not resolving, layout constraints, strict CSP), dial back to `browser` for a zero-JS CSS-only fallback, or `default` to opt out entirely.
 
 ## Attributes
 
 | Attribute | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `mode` | `"default"` \| `"browser"` \| `"custom"` | `"default"` | Processing mode |
+| `mode` | `"custom"` \| `"browser"` \| `"default"` | `"custom"` | Processing mode |
 | `align` | `"left"` \| `"justify"` \| `"right"` | `"left"` | Text alignment |
 | `font` | string | inherited from CSS | Canvas measurement font family |
 | `font-size` | string | inherited from CSS | Canvas measurement font size |
