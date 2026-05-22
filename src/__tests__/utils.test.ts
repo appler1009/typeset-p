@@ -87,36 +87,34 @@ describe('stripLeadingHangPunctuation', () => {
 
 describe('hangPunctuation', () => {
   it('wraps line-initial opening double quote in pull-double span', () => {
-    const result = hangPunctuation('"Hello world"');
-    expect(result).toContain('<span class="pull-double">"</span>');
+    const result = hangPunctuation('\u201cHello world\u201d');
+    expect(result).toContain('<span style="margin-left:-0.42em">\u201c</span>');
   });
 
   it('wraps line-initial opening single curly quote in pull-single span', () => {
-    const result = hangPunctuation('‘Hello');
-    expect(result).toContain('<span class="pull-single">‘</span>');
+    const result = hangPunctuation('\u2018Hello');
+    expect(result).toContain('<span style="margin-left:-0.22em">\u2018</span>');
   });
 
   it('wraps line-initial straight single quote in pull-single span', () => {
     const result = hangPunctuation("'Hello world'");
-    expect(result).toContain('<span class="pull-single">\'</span>');
+    expect(result).toContain('<span style="margin-left:-0.22em">\'</span>');
   });
 
   it('does NOT wrap mid-line double quote', () => {
-    // The word "said" starts the line; the embedded quote should not get a span
-    const result = hangPunctuation('He said "hello" to her');
-    expect(result).not.toContain('pull-double');
-    expect(result).not.toContain('pull-single');
+    const result = hangPunctuation('He said \u201chello\u201d to her');
+    expect(result).not.toContain('margin-left:-0.42em');
+    expect(result).not.toContain('margin-left:-0.22em');
   });
 
   it('does NOT wrap mid-line single quote / apostrophe', () => {
     const result = hangPunctuation("don't look now");
-    // "don't" starts the line and has no leading hang char, so no span
-    expect(result).not.toContain('pull-single');
-    expect(result).not.toContain('pull-double');
+    expect(result).not.toContain('margin-left:-0.22em');
+    expect(result).not.toContain('margin-left:-0.42em');
   });
 
   it('does NOT emit push-* spans', () => {
-    const result = hangPunctuation('"Hello world"');
+    const result = hangPunctuation('\u201cHello world\u201d');
     expect(result).not.toContain('push-single');
     expect(result).not.toContain('push-double');
   });
@@ -132,12 +130,12 @@ describe('hangPunctuation', () => {
   });
 
   it('handles guillemet opening', () => {
-    const result = hangPunctuation('«Bonjour»');
-    expect(result).toContain('<span class="pull-double">«</span>');
+    const result = hangPunctuation('\u00abBonjour\u00bb');
+    expect(result).toContain('<span style="margin-left:-0.42em">\u00ab</span>');
   });
 
   it('preserves the rest of the line after the pull span', () => {
-    const result = hangPunctuation('"Hello there, world"');
+    const result = hangPunctuation('\u201cHello there, world\u201d');
     expect(result).toContain('Hello there,');
   });
 });

@@ -40,13 +40,13 @@ export function hangPunctuation(text: string): string {
   // Only the first word of the line can hang into the left margin.
   for (const p of SINGLE_HANG) {
     if (words[0].startsWith(p)) {
-      words[0] = `<span class="pull-single">${p}</span>${words[0].slice(p.length)}`;
+      words[0] = `<span style="margin-left:-0.22em">${p}</span>${words[0].slice(p.length)}`;
       break;
     }
   }
   for (const p of DOUBLE_HANG) {
     if (words[0].startsWith(p)) {
-      words[0] = `<span class="pull-double">${p}</span>${words[0].slice(p.length)}`;
+      words[0] = `<span style="margin-left:-0.42em">${p}</span>${words[0].slice(p.length)}`;
       break;
     }
   }

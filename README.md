@@ -77,17 +77,6 @@ The `mode` attribute controls how much processing is applied.
 
 **`align` scope by mode.** The `align` attribute has full effect in `custom` mode (line-breaking + per-line CSS). In `browser` mode the component sets the corresponding CSS itself. In `default` mode it sets `text-align` on the element. In all cases, `align="justify"` only produces true justified text in `custom` mode — browser justification via `text-align: justify` alone tends to be uneven and is not applied in `browser` mode.
 
-## CSS for optical margin alignment
-
-In `custom` mode, the component wraps line-initial punctuation in spans for optical margin alignment. Add these rules to your stylesheet:
-
-```css
-typeset-p .pull-single { margin-left: -0.22em; } /* single quotes, apostrophes */
-typeset-p .pull-double { margin-left: -0.42em; } /* double quotes, guillemets  */
-```
-
-Without these rules the component still works — the spans are emitted but have no visual effect.
-
 ## Usage by framework
 
 ### Vanilla HTML
