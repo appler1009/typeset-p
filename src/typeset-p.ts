@@ -174,19 +174,20 @@ export class TypesetP extends _HTMLElement {
   }
 
   private _renderDefault() {
-    // Plain browser rendering — restore raw text, remove any KP spans.
-    this.style.cssText = '';
+    const align = this._align;
+    this.style.cssText = align !== 'left' ? `text-align:${align}` : '';
     this.textContent = this._rawText;
   }
 
   private _renderBrowser() {
-    const justify = this._align === 'justify';
+    const align = this._align;
+    const justify = align === 'justify';
     this.style.cssText = [
       'display:block',
       // text-wrap:pretty and text-align:justify conflict — pretty wins and
       // suppresses justification, so switch to wrap when justify is requested.
       justify ? 'text-wrap:wrap' : 'text-wrap:pretty',
-      justify ? 'text-align:justify' : '',
+      align !== 'left' ? `text-align:${align}` : '',
       'hyphens:auto',
       'hanging-punctuation:first last',
     ].filter(Boolean).join(';');
