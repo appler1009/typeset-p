@@ -121,7 +121,6 @@
       color: var(--fg);
     }
 
-    /* Optical margin alignment spans emitted by typeset.js / our hangPunctuation() */
     typeset-p .pull-single { margin-left: -0.22em; }
     typeset-p .pull-double { margin-left: -0.42em; }
     typeset-p .push-single { display: inline-block; width: 0.22em; }
@@ -150,6 +149,110 @@
       0%   { background-position: 200% 0; }
       100% { background-position: -200% 0; }
     }
+
+    /* ── Benchmark panel ───────────────────────────────────── */
+    #bench-panel {
+      position: fixed;
+      right: 24px;
+      top: 57px; /* clears the controls bar */
+      width: 188px;
+      max-height: calc(100vh - 73px);
+      display: flex;
+      flex-direction: column;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      overflow: hidden;
+      font-family: system-ui, sans-serif;
+      z-index: 9;
+    }
+
+    .bench-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding: 7px 10px 6px;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .bench-head-title {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    #bench-count {
+      font-size: 10px;
+      color: var(--muted);
+    }
+
+    #bench-entries {
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .bench-empty {
+      padding: 10px;
+      font-size: 11px;
+      color: var(--muted);
+      font-style: italic;
+      text-align: center;
+    }
+
+    .bench-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding: 5px 10px;
+      border-bottom: 1px solid var(--border);
+      gap: 6px;
+    }
+
+    .bench-row:last-child {
+      border-bottom: none;
+    }
+
+    .bench-row.is-latest {
+      background: var(--control-bg);
+    }
+
+    .bench-lbl {
+      font-size: 11px;
+      color: var(--fg);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .bench-ms {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--accent);
+      font-variant-numeric: tabular-nums;
+      flex-shrink: 0;
+      white-space: nowrap;
+    }
+
+    .bench-ms-unit {
+      font-size: 10px;
+      font-weight: 400;
+      color: var(--muted);
+      margin-left: 1px;
+    }
+
+    /* measuring indicator in the head */
+    .bench-head.is-measuring .bench-head-title {
+      color: var(--accent);
+    }
+
+    @media (max-width: 1100px) {
+      #bench-panel { display: none; }
+    }
   </style>
 </head>
 <body>
@@ -168,6 +271,16 @@
   </label>
 
   <span id="status">loading…</span>
+</div>
+
+<div id="bench-panel">
+  <div class="bench-head" id="bench-head">
+    <span class="bench-head-title">Timings</span>
+    <span id="bench-count">—</span>
+  </div>
+  <div id="bench-entries">
+    <div class="bench-empty">waiting…</div>
+  </div>
 </div>
 
 <main>
@@ -265,7 +378,70 @@
 <script type="module" src="./dist/index.js"></script>
 <script>
   const all = () => document.querySelectorAll('typeset-p');
-  const statusEl = document.getElementById('status');
+  const statusEl  = document.getElementById('status');
+  const benchHead = document.getElementById('bench-head');
+  const benchCountEl = document.getElementById('bench-count');
+  const benchEntriesEl = document.getElementById('bench-entries');
+
+  // ── Benchmark ──────────────────────────────────────────────────────────────
+  // Measures elapsed time from a trigger (attribute change / initial load) to
+  // the moment the last <typeset-p> element finishes rendering its new layout.
+  // Completion is detected via MutationObserver watching for childList changes
+  // on every element — each element mutates once when it writes new span HTML.
+
+  const Bench = (() => {
+    let mo = null;
+    let t0 = 0;
+    let label = '';
+
+    function start(lbl) {
+      label = lbl;
+      t0 = performance.now();
+
+      const elements = Array.from(all());
+      const seen = new Set();
+
+      benchCountEl.textContent = elements.length + ' para' + (elements.length === 1 ? '' : 's');
+      benchHead.classList.add('is-measuring');
+      statusEl.textContent = 'measuring…';
+
+      if (mo) mo.disconnect();
+      mo = new MutationObserver(mutations => {
+        for (const m of mutations) seen.add(m.target);
+        if (seen.size >= elements.length) {
+          const ms = performance.now() - t0;
+          mo.disconnect();
+          mo = null;
+          benchHead.classList.remove('is-measuring');
+          statusEl.textContent = 'typeset ✓';
+          addEntry(label, ms);
+        }
+      });
+
+      for (const el of elements) {
+        mo.observe(el, { childList: true });
+      }
+    }
+
+    function addEntry(lbl, ms) {
+      // Remove placeholder on first entry
+      const placeholder = benchEntriesEl.querySelector('.bench-empty');
+      if (placeholder) placeholder.remove();
+
+      // Remove highlight from previous latest
+      const prev = benchEntriesEl.querySelector('.is-latest');
+      if (prev) prev.classList.remove('is-latest');
+
+      const row = document.createElement('div');
+      row.className = 'bench-row is-latest';
+      row.innerHTML =
+        `<span class="bench-lbl">${lbl}</span>` +
+        `<span class="bench-ms">${ms.toFixed(1)}<span class="bench-ms-unit">ms</span></span>`;
+      benchEntriesEl.insertBefore(row, benchEntriesEl.firstChild);
+    }
+
+    return { start };
+  })();
 
   // ── Control wiring ─────────────────────────────────────────────────────────
 
@@ -273,6 +449,7 @@
     const size = document.getElementById('ctrl-size').value;
     document.documentElement.style.setProperty('--font-size', size + 'px');
     document.getElementById('size-label').textContent = size + 'px';
+    Bench.start('font-size ' + size + 'px');
     all().forEach(el => el.setAttribute('font-size', size + 'px'));
   }
 
@@ -280,32 +457,19 @@
     const w = document.getElementById('ctrl-width').value;
     document.documentElement.style.setProperty('--col-width', w + 'px');
     document.getElementById('width-label').textContent = w + 'px';
+    Bench.start('width ' + w + 'px');
     // Width change is handled by each element's ResizeObserver automatically.
   }
 
   document.getElementById('ctrl-size').addEventListener('input', applySize);
   document.getElementById('ctrl-width').addEventListener('input', applyWidth);
 
-  // ── Status indicator ───────────────────────────────────────────────────────
-  // Poll until the first paragraph has been typeset (innerHTML no longer equals
-  // plain text), then update the status message.
+  // ── Initial load ───────────────────────────────────────────────────────────
+  // Set attributes on DOMContentLoaded (which triggers the first render) and
+  // start the benchmark timer just before so we capture the full pipeline time.
 
-  function checkReady() {
-    const first = document.querySelector('typeset-p');
-    if (!first) return;
-    // After KP runs, innerHTML will contain <span> elements.
-    if (first.querySelector('span')) {
-      statusEl.textContent = 'typeset ✓';
-      return;
-    }
-    requestAnimationFrame(checkReady);
-  }
-  requestAnimationFrame(checkReady);
-
-  // ── Initial setup: set font + font-size on all elements ───────────────────
-  // (mode/align are already in the markup; this ensures the JS attributes match
-  // the control defaults without triggering a redundant re-render)
   document.addEventListener('DOMContentLoaded', () => {
+    Bench.start('initial load');
     all().forEach(el => {
       el.setAttribute('font', 'Lora, Georgia, serif');
       el.setAttribute('font-size', '19px');
