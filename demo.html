@@ -260,14 +260,14 @@
 <div id="controls">
   <label>
     Size
-    <input type="range" id="ctrl-size" min="14" max="26" step="1" value="19">
+    <input type="range" id="ctrl-size" min="14" max="28" step="1" value="19">
     <span class="ctrl-val" id="size-label">19px</span>
   </label>
 
   <label>
     Width
-    <input type="range" id="ctrl-width" min="360" max="900" step="10" value="640">
-    <span class="ctrl-val" id="width-label">640px</span>
+    <input type="range" id="ctrl-width" min="24" max="56" step="1" value="40">
+    <span class="ctrl-val" id="width-label">40rem</span>
   </label>
 
   <span id="status">loading…</span>
@@ -455,9 +455,9 @@
 
   function applyWidth() {
     const w = document.getElementById('ctrl-width').value;
-    document.documentElement.style.setProperty('--col-width', w + 'px');
-    document.getElementById('width-label').textContent = w + 'px';
-    Bench.start('width ' + w + 'px');
+    document.documentElement.style.setProperty('--col-width', w + 'rem');
+    document.getElementById('width-label').textContent = w + 'rem';
+    Bench.start('width ' + w + 'rem');
     // Width change is handled by each element's ResizeObserver automatically.
   }
 
