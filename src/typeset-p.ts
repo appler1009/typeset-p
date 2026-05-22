@@ -174,6 +174,10 @@ export class TypesetP extends _HTMLElement {
   }
 
   private async _renderCustom(version: number) {
+    // Ensure display:block before reading clientWidth so the element has a real
+    // layout width even if the consumer hasn't set display on it via CSS.
+    this.style.cssText = 'display:block;';
+
     const font = this._font;
     const fontSize = this._fontSize;
     const align = this._align;
@@ -243,7 +247,6 @@ export class TypesetP extends _HTMLElement {
     if (version !== this._version) return;
 
     // Step 9: inject into the element
-    this.style.cssText = 'display:block;';
     this.innerHTML = html;
   }
 }
