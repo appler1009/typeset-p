@@ -42,7 +42,7 @@ The `mode` attribute controls how much processing is applied.
 | Attribute | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `mode` | `"default"` \| `"browser"` \| `"custom"` | `"default"` | Processing mode |
-| `align` | `"left"` \| `"justify"` | `"left"` | Text alignment |
+| `align` | `"left"` \| `"justify"` \| `"right"` | `"left"` | Text alignment |
 | `font` | string | inherited from CSS | Font family passed to canvas measurement, e.g. `"Lora, Georgia, serif"` |
 | `font-size` | string | inherited from CSS | Font size passed to canvas measurement, e.g. `"18px"` |
 | `hyphenate` | `"false"` to disable | enabled | Soft hyphenation for words ≥ 8 characters |

@@ -32,7 +32,7 @@ import {
 } from './utils.js';
 
 export type TypesetPMode = 'default' | 'browser' | 'custom';
-export type TypesetPAlign = 'left' | 'justify';
+export type TypesetPAlign = 'left' | 'justify' | 'right';
 
 /** All attributes accepted by <typeset-p>. */
 export interface TypesetPAttributes {
@@ -90,7 +90,9 @@ export class TypesetP extends _HTMLElement {
   }
 
   private get _align(): Align {
-    return this.getAttribute('align') === 'justify' ? 'justify' : 'left';
+    const v = this.getAttribute('align');
+    if (v === 'justify' || v === 'right') return v;
+    return 'left';
   }
 
   private get _font(): string {

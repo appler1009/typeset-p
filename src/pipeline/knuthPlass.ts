@@ -319,7 +319,9 @@ export function kpLinesToHtml(
         : '';
     const justifyStyle = textAlign === 'justify' && !line.isLast
       ? 'text-align:justify;text-align-last:justify;'
-      : '';
+      : textAlign === 'right'
+        ? 'text-align:right;'
+        : '';
     const hangStyle = hasHangLast
       ? 'width:calc(100% + 0.16em);margin-right:-0.16em;'
       : 'width:100%;';
