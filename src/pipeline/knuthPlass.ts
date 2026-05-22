@@ -82,9 +82,8 @@ export function computeOptimalLines(
     return { wordWidth, spaceCount, endsWithHyphen };
   }
 
-  const HYPHEN_PENALTY   =  150;
-  const LADDER_2_PENALTY =  400;
-  const LADDER_3_PENALTY = 1500;
+  const LADDER_2_PENALTY =  400;  // two consecutive hyphenated lines
+  const LADDER_3_PENALTY = 1500; // three or more consecutive hyphenated lines
 
   const WIDOW_THRESHOLD = 0.15;
   const WIDOW_PENALTY   = 3000;
@@ -128,7 +127,7 @@ export function computeOptimalLines(
     const hyphenPenalty = !endsWithHyphen       ? 0
       : prevRunLength >= 2                      ? LADDER_3_PENALTY
       : prevRunLength >= 1                      ? LADDER_2_PENALTY
-      :                                           HYPHEN_PENALTY;
+      :                                           0; // isolated hyphen: no penalty
 
     const alternationPenalty =
       (prevZone === ZONE_TIGHT && currentZone === ZONE_LOOSE) ||

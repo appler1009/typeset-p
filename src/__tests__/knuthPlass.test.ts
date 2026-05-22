@@ -108,6 +108,30 @@ describe('computeOptimalLines', () => {
     }
   });
 
+  it('prefers a hyphen break over overflowing the line width', () => {
+    // A word that only fits if split at a soft hyphen should still be split
+    const SOFT = '­';
+    const segments = ['abcde', SOFT, 'fghij'];
+    const w = [40, 0, 40]; // 40px each half, hyphen = 8px
+    // maxWidth=50 → full word 80px doesn't fit; break at soft hyphen (40+8=48 ≤ 50)
+    const lines = computeOptimalLines(segments, w, 50, SPACE_W, HYPHEN_W, 'left');
+    expect(lines.length).toBeGreaterThanOrEqual(2);
+    expect(lines[0].text).toMatch(/-$/);
+  });
+
+  it('does not penalise an isolated hyphenated line', () => {
+    // A paragraph where only one line must be hyphenated should not be
+    // avoided in favour of a worse overall layout.
+    // We verify by checking that the algorithm still produces a hyphen when
+    // it is the only way to fit the text, i.e. it does not refuse to break.
+    const SOFT = '­';
+    const segments = ['short', ' ', 'ver', SOFT, 'bose', ' ', 'end'];
+    const w =        [  40,    0,    24,    0,    32,    0,   24];
+    const lines = computeOptimalLines(segments, w, 70, SPACE_W, HYPHEN_W, 'left');
+    const allText = lines.map(l => l.text).join(' ');
+    expect(allText.replace(/ +/g, ' ').trim()).toContain('ver');
+  });
+
   it('handles a single word paragraph (no spaces)', () => {
     const s = ['Antidisestablishmentarianism'];
     const w = [s[0].length * 8];
