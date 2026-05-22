@@ -1,0 +1,45 @@
+{
+  "name": "typeset-p",
+  "version": "0.1.0",
+  "description": "Browser-only Web Component for advanced typesetting — Knuth-Plass line breaking, optical margin alignment, smart typography.",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    }
+  },
+  "files": [
+    "dist/index.js",
+    "dist/index.cjs",
+    "dist/index.d.ts",
+    "dist/index.d.cts"
+  ],
+  "license": "MIT",
+  "sideEffects": true,
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit",
+    "serve": "npx serve . --no-clipboard",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
+  },
+  "devDependencies": {
+    "@chenglou/pretext": "^0.0.7",
+    "@vitest/coverage-v8": "^4.1.7",
+    "hyphen": "^1.8.0",
+    "jsdom": "^29.1.1",
+    "tsup": "^8.0.0",
+    "typescript": "^5.4.0",
+    "vitest": "^4.1.7"
+  }
+}

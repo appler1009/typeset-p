@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>typeset-p demo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --font-size: 19px;
+      --line-height: 1.72;
+      --col-width: 640px;
+      --bg: #faf9f7;
+      --fg: #1a1915;
+      --accent: #6b5b45;
+      --muted: #8a7f72;
+      --border: #e0dbd3;
+      --control-bg: #f0ece6;
+    }
+
+    body {
+      font-family: 'Lora', Georgia, serif;
+      font-size: var(--font-size);
+      line-height: var(--line-height);
+      background: var(--bg);
+      color: var(--fg);
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+      font-variant-ligatures: common-ligatures;
+      font-feature-settings: "liga" 1, "kern" 1;
+    }
+
+    /* ── Controls bar ──────────────────────────────────────── */
+    #controls {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 24px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 20px;
+      align-items: center;
+    }
+
+    #controls label {
+      font-family: system-ui, sans-serif;
+      font-size: 13px;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+    }
+
+    #controls select,
+    #controls input[type=range] {
+      font-family: system-ui, sans-serif;
+      font-size: 13px;
+      background: var(--control-bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 3px 6px;
+      color: var(--fg);
+      cursor: pointer;
+    }
+
+    #controls input[type=range] {
+      padding: 0;
+      width: 90px;
+      accent-color: var(--accent);
+    }
+
+    .ctrl-val {
+      font-family: system-ui, sans-serif;
+      font-size: 13px;
+      color: var(--muted);
+      min-width: 4ch;
+    }
+
+    #status {
+      margin-left: auto;
+      font-family: system-ui, sans-serif;
+      font-size: 12px;
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    /* ── Main content ──────────────────────────────────────── */
+    main {
+      max-width: var(--col-width);
+      margin: 0 auto;
+      padding: 60px 24px 100px;
+    }
+
+    h1 {
+      font-size: 14px;
+      font-weight: 400;
+      font-family: system-ui, sans-serif;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 40px;
+    }
+
+    /* ── Paragraph block ───────────────────────────────────── */
+    .para-wrap {
+      margin-bottom: calc(var(--line-height) * 1em);
+    }
+
+    typeset-p {
+      display: block;
+      font-family: 'Lora', Georgia, serif;
+      font-size: var(--font-size);
+      line-height: var(--line-height);
+      color: var(--fg);
+    }
+
+    /* Optical margin alignment spans emitted by typeset.js / our hangPunctuation() */
+    typeset-p .pull-single { margin-left: -0.22em; }
+    typeset-p .pull-double { margin-left: -0.42em; }
+    typeset-p .push-single { display: inline-block; width: 0.22em; }
+    typeset-p .push-double { display: inline-block; width: 0.42em; }
+    typeset-p .small-caps  { font-variant: small-caps; }
+
+    /* ── Dividers ──────────────────────────────────────────── */
+    .section-break {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 40px 0;
+    }
+
+    /* ── Loading state ─────────────────────────────────────── */
+    typeset-p[data-loading]::after {
+      content: '';
+      display: block;
+      height: 1em;
+      background: linear-gradient(90deg, var(--border) 25%, var(--bg) 50%, var(--border) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.2s infinite;
+      border-radius: 2px;
+      opacity: 0.5;
+    }
+    @keyframes shimmer {
+      0%   { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="controls">
+  <label>
+    Size
+    <input type="range" id="ctrl-size" min="14" max="26" step="1" value="19">
+    <span class="ctrl-val" id="size-label">19px</span>
+  </label>
+
+  <label>
+    Width
+    <input type="range" id="ctrl-width" min="360" max="900" step="10" value="640">
+    <span class="ctrl-val" id="width-label">640px</span>
+  </label>
+
+  <span id="status">loading…</span>
+</div>
+
+<main>
+  <h1>typeset&#8209;p &mdash; demo</h1>
+
+  <div class="para-wrap">
+    <typeset-p mode="custom" align="justify">The sun rose slowly over the quiet fields, casting long shadows across the uneven ground. A single bird broke the silence, its call echoing down the empty road. He stood at the edge of the village, watching the smoke curl from distant chimneys, undecided whether to stay or go.</typeset-p>
+  </div>
+
+  <div class="para-wrap">
+    <typeset-p mode="custom" align="justify">It was a truth generally accepted that a man with a fortune must be in need of a wife, yet the quiet countryside seemed to have forgotten this. The lanes remained empty; the houses, though neat and tidy, showed no sign of visitors. The world moved on, but the village stayed stubbornly still.</typeset-p>
+  </div>
+
+  <div class="para-wrap">
+    <typeset-p mode="custom" align="justify">To be, or not to be—that was the question he had asked himself every morning for years. The weight of each choice pressed upon him, heavier than the books on his desk. Yet action always came in small steps, not in grand declarations.</typeset-p>
+  </div>
+
+  <div class="para-wrap">
+    <typeset-p mode="custom" align="justify">The river ran dark and smooth beneath the old stone bridge, its surface broken only by the occasional ripple. Children once played there, splashing and shouting, but now the bank was quiet. The stones remembered games and laughter, even if no one else did.</typeset-p>
+  </div>
+
+  <div class="para-wrap">
+    <typeset-p mode="custom" align="justify">A dispute arose between the wind and the sun, each claiming to be stronger than the other. They agreed to test their power on a passing traveler, to see who could first make him remove his coat. The wind tried first, but the harder it blew, the tighter the man held on.</typeset-p>
+  </div>
+
+  <div class="para-wrap">
+    <typeset-p mode="custom" align="justify">The house stood at the end of a narrow, overgrown path, its windows dark and its shutters closed. Stories had gathered around it like moss, each more unlikely than the last. Yet, from the outside, it looked like any other cottage, ordinary and unremarkable.</typeset-p>
+  </div>
+
+  <div class="para-wrap">
+    <typeset-p mode="custom" align="justify">The night was cold and clear, the stars so bright they seemed to press down on the earth. She walked along the road humming an old tune, half&#8209;remembered, half&#8209;invented. The sound carried farther than she expected, as if the air itself were listening.</typeset-p>
+  </div>
+
+  <div class="para-wrap">
+    <typeset-p mode="custom" align="justify">The train rolled slowly through the countryside, its whistle cutting through the damp air. Passengers stared out the windows at the blurred fields, each lost in thoughts they would never share. The rhythm of the wheels made speech feel unnecessary.</typeset-p>
+  </div>
+
+  <div class="para-wrap">
+    <typeset-p mode="custom" align="justify">A letter arrived one Tuesday, its seal unbroken and its handwriting unfamiliar. The envelope sat on the table for hours before anyone dared to open it. Words, once read, could not be taken back, and the house seemed to know this.</typeset-p>
+  </div>
+
+  <div class="para-wrap">
+    <typeset-p mode="custom" align="justify">The library was silent except for the sound of pages turning and the occasional creak of a footstep. The shelves rose high into the gloom, holding stories that no one had touched in years. Yet, even in the quiet, the books seemed to be waiting for someone to speak them aloud again.</typeset-p>
+  </div>
+
+  <hr class="section-break">
+
+  <div class="para-wrap">
+    <typeset-p mode="custom" align="justify">The reader has now before him a chronologically arranged sketch of the action of the Odyssey. It is, perhaps, apparent, even from this bare outline, that the composition is elaborate and artistic, that the threads of the plot are skilfully separated and combined. The germ of the whole epic is probably the popular tale, known all over the world, of the warrior who, on his return from a long expedition, has great difﬁculty in making his prudent wife recognise him. The incident occurs as a detached story in China, and in most European countries it is told of a crusader. "We may suppose it to be older than the legend of Troy, and to have gravitated into the cycle of that legend. The years of the hero's absence are then ﬁlled up with adventures (the Cyclops, Circé, the Phaeacians, the Sirens, the descent into hell) which exist as scattered tales, or are woven into the more elaborate epics of Gaels, Aztecs, Hindoos, Tartars, South-Sea Islanders, Finns, Russians, Scandinavians, and Eskimo. The whole is surrounded with the atmosphere of the kingly age of Greece, and the result is the Odyssey, with that unity of plot and variety of character which must have been given by one masterly constructive genius. The date at which the poet of the Odyssey lived may be approximately determined by his consistent descriptions of a peculiar and definite condition of society, which had ceased to exist in the ninth century B.C., and of a stage of art in which Phoenician and Assyrian inﬂuences predominated. (Die Kunst bei Homer. Brunn.) As to the mode of composition, it would not be difﬁcult to show that at least the a priori Wolﬁan arguments against the early use of writing for literary purposes have no longer the cogency which they were once thought to possess. But this is matter for a separate investigation.</typeset-p>
+  </div>
+
+  <hr class="section-break">
+
+  <div class="para-wrap">
+    <typeset-p mode="custom" align="justify">She said, "I'll meet you by the old oak tree," and then paused, as if to let the words settle. The wind carried her voice away before he could answer, leaving only the echo between them.</typeset-p>
+  </div>
+
+  <div class="para-wrap">
+    <typeset-p mode="custom" align="justify">"Don't tell anyone," he whispered, "but I saw something strange in the attic last night." The candle flickered, and for a moment it seemed the house itself leaned in to listen.</typeset-p>
+  </div>
+
+  <div class="para-wrap">
+    <typeset-p mode="custom" align="justify">The teacher closed the book and asked, "Why does the character say 'I am not afraid' when he clearly is?" The students looked at each other, unsure who should speak first.</typeset-p>
+  </div>
+
+  <div class="para-wrap">
+    <typeset-p mode="custom" align="justify">"This is not what I meant," she replied sharply, "when I said we should talk." The rain began to fall, as if the sky had overheard the last sentence and decided to join the argument.</typeset-p>
+  </div>
+
+  <div class="para-wrap">
+    <typeset-p mode="custom" align="justify">He pointed at the map and said, "The village is just beyond this ridge, or so the old man claimed." The words sounded uncertain even as he voiced them, like a story half&#8209;remembered.</typeset-p>
+  </div>
+
+  <div class="para-wrap">
+    <typeset-p mode="custom" align="justify">"Tomorrow,' she always says, 'we'll start fresh,'" he muttered to himself. The phrase had grown stale, but he could still hear the echo of her smile in every syllable.</typeset-p>
+  </div>
+
+  <div class="para-wrap">
+    <typeset-p mode="custom" align="justify">"Why do you keep calling it 'just a feeling'?" she asked. "Sometimes feelings are the only proof we have." The clock ticked loudly, as if counting the weight of her question.</typeset-p>
+  </div>
+
+  <div class="para-wrap">
+    <typeset-p mode="custom" align="justify">The note read, "Leave the door unlocked tonight," and nothing more. He stared at the paper, wondering whose hand had formed those neat, deliberate letters.</typeset-p>
+  </div>
+
+  <div class="para-wrap">
+    <typeset-p mode="custom" align="justify">"'I can't be there,' he wrote, 'but I'll be thinking of you,'" she said aloud to the empty room. The words sounded different when spoken, as if they belonged to someone else.</typeset-p>
+  </div>
+
+  <div class="para-wrap">
+    <typeset-p mode="custom" align="justify">"Did you hear what they said?" he asked. "They called it 'a miracle,' but miracles don't usually come with a price tag." The lamp dimmed, as though the room had sighed in agreement.</typeset-p>
+  </div>
+</main>
+
+<script type="module" src="./dist/index.js"></script>
+<script>
+  const all = () => document.querySelectorAll('typeset-p');
+  const statusEl = document.getElementById('status');
+
+  // ── Control wiring ─────────────────────────────────────────────────────────
+
+  function applySize() {
+    const size = document.getElementById('ctrl-size').value;
+    document.documentElement.style.setProperty('--font-size', size + 'px');
+    document.getElementById('size-label').textContent = size + 'px';
+    all().forEach(el => el.setAttribute('font-size', size + 'px'));
+  }
+
+  function applyWidth() {
+    const w = document.getElementById('ctrl-width').value;
+    document.documentElement.style.setProperty('--col-width', w + 'px');
+    document.getElementById('width-label').textContent = w + 'px';
+    // Width change is handled by each element's ResizeObserver automatically.
+  }
+
+  document.getElementById('ctrl-size').addEventListener('input', applySize);
+  document.getElementById('ctrl-width').addEventListener('input', applyWidth);
+
+  // ── Status indicator ───────────────────────────────────────────────────────
+  // Poll until the first paragraph has been typeset (innerHTML no longer equals
+  // plain text), then update the status message.
+
+  function checkReady() {
+    const first = document.querySelector('typeset-p');
+    if (!first) return;
+    // After KP runs, innerHTML will contain <span> elements.
+    if (first.querySelector('span')) {
+      statusEl.textContent = 'typeset ✓';
+      return;
+    }
+    requestAnimationFrame(checkReady);
+  }
+  requestAnimationFrame(checkReady);
+
+  // ── Initial setup: set font + font-size on all elements ───────────────────
+  // (mode/align are already in the markup; this ensures the JS attributes match
+  // the control defaults without triggering a redundant re-render)
+  document.addEventListener('DOMContentLoaded', () => {
+    all().forEach(el => {
+      el.setAttribute('font', 'Lora, Georgia, serif');
+      el.setAttribute('font-size', '19px');
+    });
+  });
+</script>
+</body>
+</html>
