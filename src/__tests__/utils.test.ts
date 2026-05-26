@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import {
   normalizeWhitespaceForKP,
   stripLeadingHangPunctuation,
+  splitLeadingForKP,
   hangPunctuation,
 } from '../utils.js';
 
@@ -82,6 +83,16 @@ describe('stripLeadingHangPunctuation', () => {
     const result = stripLeadingHangPunctuation('The quick brown fox');
     expect(result.leading).toBe('');
     expect(result.rest).toBe('The quick brown fox');
+  });
+});
+
+describe('splitLeadingForKP', () => {
+  it('keeps leading quote in measured text when hanging is disabled', () => {
+    expect(splitLeadingForKP('"hello"', false)).toEqual({ leading: '', rest: '"hello"' });
+  });
+
+  it('strips leading quote for KP when hanging is enabled', () => {
+    expect(splitLeadingForKP('\u201chello\u201d', true)).toEqual({ leading: '\u201c', rest: 'hello\u201d' });
   });
 });
 

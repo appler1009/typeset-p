@@ -26,6 +26,12 @@ export function stripLeadingHangPunctuation(text: string): { leading: string; re
   return { leading: '', rest: text };
 }
 
+/** Split leading punctuation for KP only when optical margin alignment is enabled. */
+export function splitLeadingForKP(text: string, hangEnabled: boolean): { leading: string; rest: string } {
+  if (!hangEnabled) return { leading: '', rest: text };
+  return stripLeadingHangPunctuation(text);
+}
+
 const SINGLE_HANG = ["'", '′', '‘', '’'];
 const DOUBLE_HANG = ['"', '“', '”', '«', '»', '«', '»'];
 

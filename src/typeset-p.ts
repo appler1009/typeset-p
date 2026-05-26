@@ -26,7 +26,7 @@ import {
 import { prepareWithSegments } from '@chenglou/pretext';
 import {
   normalizeWhitespaceForKP,
-  stripLeadingHangPunctuation,
+  splitLeadingForKP,
   hangPunctuation,
   hasNativeHanging,
 } from './utils.js';
@@ -257,8 +257,8 @@ export class TypesetP extends _HTMLElement {
     const normalSpaceW = measureNormalSpaceWidth(fontString);
     const hyphenW = measureHyphenWidth(fontString);
 
-    // Strip leading hang punctuation before measuring (it'll be re-prepended)
-    const { leading, rest } = stripLeadingHangPunctuation(processedText);
+    const hangEnabled = this._bool('hanging-punctuation');
+    const { leading, rest } = splitLeadingForKP(processedText, hangEnabled);
     const prepared = prepareWithSegments(rest, fontString);
 
     // Step 7: Knuth-Plass DP
@@ -277,9 +277,7 @@ export class TypesetP extends _HTMLElement {
 
     // Step 8: serialize to HTML
     const nativeHang = hasNativeHanging(this);
-    const hangFn = this._bool('hanging-punctuation') && !nativeHang
-      ? hangPunctuation
-      : undefined;
+    const hangFn = hangEnabled && !nativeHang ? hangPunctuation : undefined;
 
     const html = kpLinesToHtml(lines, hangFn, leading, effectiveRatio, align);
 
