@@ -56,6 +56,7 @@ The `mode` attribute controls how much processing is applied.
 | `hyphenate` | `"false"` to disable | enabled | Soft hyphenation |
 | `smart-quotes` | `"false"` to disable | enabled | Typography normalization |
 | `hanging-punctuation` | `"false"` to disable | enabled | Optical margin alignment |
+| `last-line` | `"average"` \| `"justify"` \| `"ragged"` | `"average"` | Final-line spacing when `align="justify"` (custom mode only) |
 
 **`font`** — Font family used for canvas measurement, e.g. `"Lora, Georgia, serif"`. Must be a resolved family name — CSS variables are not evaluated on canvas. If omitted, read from `getComputedStyle`; CSS-only changes won't trigger a re-render.
 
@@ -90,6 +91,8 @@ Set `hanging-punctuation="false"` to disable alignment entirely. In `custom` mod
 ```
 
 **`align` scope by mode.** The `align` attribute has full effect in `custom` mode (line-breaking + per-line CSS). In `browser` mode the component sets the corresponding CSS itself. In `default` mode it sets `text-align` on the element. In all cases, `align="justify"` only produces true justified text in `custom` mode — browser justification via `text-align: justify` alone tends to be uneven and is not applied in `browser` mode.
+
+**Last line in `justify` mode.** Body lines are fully justified to the column width. The final line intentionally keeps a ragged right edge: it receives the average word-spacing of the body lines (capped so it still fits), not full justification. Use `last-line="justify"` to stretch and justify the final line when it fits, or `last-line="ragged"` for normal word spacing and explicit left alignment.
 
 ## Usage by framework
 
