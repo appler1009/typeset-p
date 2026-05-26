@@ -1,6 +1,6 @@
 {
   "name": "typeset-p",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Browser-only Web Component for advanced typesetting — Knuth-Plass line breaking, optical margin alignment, smart typography.",
   "type": "module",
   "main": "./dist/index.cjs",
