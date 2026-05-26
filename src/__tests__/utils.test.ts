@@ -99,29 +99,29 @@ describe('splitLeadingForKP', () => {
 describe('hangPunctuation', () => {
   it('wraps line-initial opening double quote in pull-double span', () => {
     const result = hangPunctuation('\u201cHello world\u201d');
-    expect(result).toContain('<span style="margin-left:-0.42em">\u201c</span>');
+    expect(result).toContain('<span style="margin-left:var(--typeset-pull-double,-0.42em)">\u201c</span>');
   });
 
   it('wraps line-initial opening single curly quote in pull-single span', () => {
     const result = hangPunctuation('\u2018Hello');
-    expect(result).toContain('<span style="margin-left:-0.22em">\u2018</span>');
+    expect(result).toContain('<span style="margin-left:var(--typeset-pull-single,-0.22em)">\u2018</span>');
   });
 
   it('wraps line-initial straight single quote in pull-single span', () => {
     const result = hangPunctuation("'Hello world'");
-    expect(result).toContain('<span style="margin-left:-0.22em">\'</span>');
+    expect(result).toContain('<span style="margin-left:var(--typeset-pull-single,-0.22em)">\'</span>');
   });
 
   it('does NOT wrap mid-line double quote', () => {
     const result = hangPunctuation('He said \u201chello\u201d to her');
-    expect(result).not.toContain('margin-left:-0.42em');
-    expect(result).not.toContain('margin-left:-0.22em');
+    expect(result).not.toContain('--typeset-pull-double');
+    expect(result).not.toContain('--typeset-pull-single');
   });
 
   it('does NOT wrap mid-line single quote / apostrophe', () => {
     const result = hangPunctuation("don't look now");
-    expect(result).not.toContain('margin-left:-0.22em');
-    expect(result).not.toContain('margin-left:-0.42em');
+    expect(result).not.toContain('--typeset-pull-single');
+    expect(result).not.toContain('--typeset-pull-double');
   });
 
   it('does NOT emit push-* spans', () => {
@@ -142,7 +142,7 @@ describe('hangPunctuation', () => {
 
   it('handles guillemet opening', () => {
     const result = hangPunctuation('\u00abBonjour\u00bb');
-    expect(result).toContain('<span style="margin-left:-0.42em">\u00ab</span>');
+    expect(result).toContain('<span style="margin-left:var(--typeset-pull-double,-0.42em)">\u00ab</span>');
   });
 
   it('preserves the rest of the line after the pull span', () => {
