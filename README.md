@@ -25,6 +25,12 @@ Import once — anywhere in your app — to register the custom element globally
 import 'typeset-p';
 ```
 
+To tune optical margin pull amounts for your font (optional):
+
+```js
+import 'typeset-p/styles.css';
+```
+
 Then use `<typeset-p>` anywhere in your HTML or component templates. It inherits font, size, and color from CSS like any other element.
 
 ## Modes

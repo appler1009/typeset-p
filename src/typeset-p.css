@@ -1,0 +1,11 @@
+/**
+ * Optional defaults for optical margin alignment in custom mode.
+ * Import alongside typeset-p when you want to tune pull amounts per font:
+ *
+ *   import 'typeset-p';
+ *   import 'typeset-p/styles.css';
+ */
+typeset-p {
+  --typeset-pull-single: -0.22em;
+  --typeset-pull-double: -0.42em;
+}

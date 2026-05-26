@@ -14,13 +14,15 @@
         "types": "./dist/index.d.cts",
         "default": "./dist/index.cjs"
       }
-    }
+    },
+    "./styles.css": "./dist/typeset-p.css"
   },
   "files": [
     "dist/index.js",
     "dist/index.cjs",
     "dist/index.d.ts",
-    "dist/index.d.cts"
+    "dist/index.d.cts",
+    "dist/typeset-p.css"
   ],
   "license": "MIT",
   "repository": {
@@ -33,7 +35,7 @@
   },
   "sideEffects": true,
   "scripts": {
-    "build": "tsup",
+    "build": "tsup && cp src/typeset-p.css dist/typeset-p.css",
     "dev": "tsup --watch",
     "typecheck": "tsc --noEmit",
     "serve": "npx serve . --no-clipboard",
