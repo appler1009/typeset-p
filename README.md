@@ -59,7 +59,15 @@ The `mode` attribute controls how much processing is applied.
 
 **`smart-quotes`** — Converts `"straight"` quotes to `"curly"` quotes, `--` to em dashes, `...` to ellipses.
 
-**`hanging-punctuation`** — Pulls leading quotes into the left margin for optical alignment.
+**`hanging-punctuation`** — Optical margin alignment for quotes and similar punctuation. Behavior depends on `mode`:
+
+| Mode | Mechanism |
+|------|-----------|
+| `custom` | Inline negative margins on line-initial opening quotes (works out of the box; tune with `--typeset-pull-single` / `--typeset-pull-double` on the element) |
+| `browser` | Native `hanging-punctuation: first last` (Safari today; other engines may ignore it) |
+| `default` | No hanging |
+
+Set `hanging-punctuation="false"` to disable alignment entirely. In `custom` mode, quotes then stay inline and are included in Knuth-Plass line-width calculations like any other character.
 
 ## Notes for `custom` mode
 
