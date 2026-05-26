@@ -25,6 +25,12 @@ Import once — anywhere in your app — to register the custom element globally
 import 'typeset-p';
 ```
 
+To tune optical margin pull amounts for your font (optional):
+
+```js
+import 'typeset-p/styles.css';
+```
+
 Then use `<typeset-p>` anywhere in your HTML or component templates. It inherits font, size, and color from CSS like any other element.
 
 ## Modes
@@ -50,6 +56,7 @@ The `mode` attribute controls how much processing is applied.
 | `hyphenate` | `"false"` to disable | enabled | Soft hyphenation |
 | `smart-quotes` | `"false"` to disable | enabled | Typography normalization |
 | `hanging-punctuation` | `"false"` to disable | enabled | Optical margin alignment |
+| `last-line` | `"average"` \| `"justify"` \| `"ragged"` | `"average"` | Final-line spacing when `align="justify"` (custom mode only) |
 
 **`font`** — Font family used for canvas measurement, e.g. `"Lora, Georgia, serif"`. Must be a resolved family name — CSS variables are not evaluated on canvas. If omitted, read from `getComputedStyle`; CSS-only changes won't trigger a re-render.
 
@@ -59,7 +66,15 @@ The `mode` attribute controls how much processing is applied.
 
 **`smart-quotes`** — Converts `"straight"` quotes to `"curly"` quotes, `--` to em dashes, `...` to ellipses.
 
-**`hanging-punctuation`** — Pulls leading quotes into the left margin for optical alignment.
+**`hanging-punctuation`** — Optical margin alignment for quotes and similar punctuation. Behavior depends on `mode`:
+
+| Mode | Mechanism |
+|------|-----------|
+| `custom` | Inline negative margins on line-initial opening quotes (works out of the box; tune with `--typeset-pull-single` / `--typeset-pull-double` on the element) |
+| `browser` | Native `hanging-punctuation: first last` (Safari today; other engines may ignore it) |
+| `default` | No hanging |
+
+Set `hanging-punctuation="false"` to disable alignment entirely. In `custom` mode, quotes then stay inline and are included in Knuth-Plass line-width calculations like any other character.
 
 ## Notes for `custom` mode
 
@@ -76,6 +91,8 @@ The `mode` attribute controls how much processing is applied.
 ```
 
 **`align` scope by mode.** The `align` attribute has full effect in `custom` mode (line-breaking + per-line CSS). In `browser` mode the component sets the corresponding CSS itself. In `default` mode it sets `text-align` on the element. In all cases, `align="justify"` only produces true justified text in `custom` mode — browser justification via `text-align: justify` alone tends to be uneven and is not applied in `browser` mode.
+
+**Last line in `justify` mode.** Body lines are fully justified to the column width. The final line intentionally keeps a ragged right edge: it receives the average word-spacing of the body lines (capped so it still fits), not full justification. Use `last-line="justify"` to stretch and justify the final line when it fits, or `last-line="ragged"` for normal word spacing and explicit left alignment.
 
 ## Usage by framework
 

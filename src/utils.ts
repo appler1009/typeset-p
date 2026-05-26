@@ -26,6 +26,12 @@ export function stripLeadingHangPunctuation(text: string): { leading: string; re
   return { leading: '', rest: text };
 }
 
+/** Split leading punctuation for KP only when optical margin alignment is enabled. */
+export function splitLeadingForKP(text: string, hangEnabled: boolean): { leading: string; rest: string } {
+  if (!hangEnabled) return { leading: '', rest: text };
+  return stripLeadingHangPunctuation(text);
+}
+
 const SINGLE_HANG = ["'", '′', '‘', '’'];
 const DOUBLE_HANG = ['"', '“', '”', '«', '»', '«', '»'];
 
@@ -40,13 +46,13 @@ export function hangPunctuation(text: string): string {
   // Only the first word of the line can hang into the left margin.
   for (const p of SINGLE_HANG) {
     if (words[0].startsWith(p)) {
-      words[0] = `<span style="margin-left:-0.22em">${p}</span>${words[0].slice(p.length)}`;
+      words[0] = `<span style="margin-left:var(--typeset-pull-single,-0.22em)">${p}</span>${words[0].slice(p.length)}`;
       break;
     }
   }
   for (const p of DOUBLE_HANG) {
     if (words[0].startsWith(p)) {
-      words[0] = `<span style="margin-left:-0.42em">${p}</span>${words[0].slice(p.length)}`;
+      words[0] = `<span style="margin-left:var(--typeset-pull-double,-0.42em)">${p}</span>${words[0].slice(p.length)}`;
       break;
     }
   }

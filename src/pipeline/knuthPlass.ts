@@ -22,6 +22,9 @@ export interface KPLine {
   spaceCount: number;
 }
 
+/** How the final line is spaced when align="justify" in custom mode. */
+export type LastLineMode = 'average' | 'justify' | 'ragged';
+
 export function measureNormalSpaceWidth(font: string): number {
   const canvas = document.createElement('canvas');
   const ctx = canvas.getContext('2d')!;
@@ -44,6 +47,7 @@ export function computeOptimalLines(
   hyphenW: number,
   textAlign: 'left' | 'justify' | 'right' = 'justify',
   targetWidth?: number,
+  lastLineMode: LastLineMode = 'average',
 ): KPLine[] {
   const n = segments.length;
   if (n === 0) return [];
@@ -274,7 +278,13 @@ export function computeOptimalLines(
       const last = lines[lines.length - 1];
       if (last.spaceCount > 0) {
         const maxExtra = (maxWidth - last.wordWidth) / last.spaceCount - normalSpaceW;
-        last.wordSpacingExtra = Math.max(0, Math.min(avg, maxExtra));
+        if (lastLineMode === 'ragged') {
+          last.wordSpacingExtra = 0;
+        } else if (lastLineMode === 'justify') {
+          last.wordSpacingExtra = Math.max(0, maxExtra);
+        } else {
+          last.wordSpacingExtra = Math.max(0, Math.min(avg, maxExtra));
+        }
       } else {
         last.wordSpacingExtra = 0;
       }
@@ -292,6 +302,7 @@ export function kpLinesToHtml(
   prependFirstLine?: string,
   calibRatio?: number,
   textAlign: 'left' | 'justify' | 'right' = 'justify',
+  lastLineMode: LastLineMode = 'average',
 ): string {
   let result = '';
   for (let i = 0; i < lines.length; i++) {
@@ -317,11 +328,15 @@ export function kpLinesToHtml(
       adjustedWs !== 0
         ? `;word-spacing:${adjustedWs.toFixed(3)}px`
         : '';
-    const justifyStyle = textAlign === 'justify' && !line.isLast
-      ? 'text-align:justify;text-align-last:justify;'
-      : textAlign === 'right'
-        ? 'text-align:right;'
-        : '';
+    const justifyLast = textAlign === 'justify' && line.isLast && lastLineMode === 'justify';
+    const justifyStyle =
+      textAlign === 'justify' && (!line.isLast || justifyLast)
+        ? 'text-align:justify;text-align-last:justify;'
+        : textAlign === 'justify' && line.isLast && lastLineMode === 'ragged'
+          ? 'text-align:left;'
+          : textAlign === 'right'
+            ? 'text-align:right;'
+            : '';
     const hangStyle = hasHangLast
       ? 'width:calc(100% + 0.16em);margin-right:-0.16em;'
       : 'width:100%;';
