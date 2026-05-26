@@ -22,6 +22,7 @@ import {
   measureNormalSpaceWidth,
   measureHyphenWidth,
   type KPLine,
+  type LastLineMode,
 } from './pipeline/knuthPlass.js';
 import { prepareWithSegments } from '@chenglou/pretext';
 import {
@@ -33,6 +34,7 @@ import {
 
 export type TypesetPMode = 'default' | 'browser' | 'custom';
 export type TypesetPAlign = 'left' | 'justify' | 'right';
+export type TypesetPLastLine = LastLineMode;
 
 /** All attributes accepted by <typeset-p>. Omitting mode defaults to "custom". */
 export interface TypesetPAttributes {
@@ -46,12 +48,14 @@ export interface TypesetPAttributes {
   'smart-quotes'?: string;
   /** Set to "false" to disable optical margin alignment. Default: enabled. */
   'hanging-punctuation'?: string;
+  /** Last line spacing when align="justify": average (default), justify, or ragged. */
+  'last-line'?: TypesetPLastLine;
 }
 
 type Mode = TypesetPMode;
 type Align = TypesetPAlign;
 
-const OBSERVED = ['mode', 'align', 'font', 'font-size', 'hyphenate', 'smart-quotes', 'hanging-punctuation'] as const;
+const OBSERVED = ['mode', 'align', 'font', 'font-size', 'hyphenate', 'smart-quotes', 'hanging-punctuation', 'last-line'] as const;
 
 // SSR guard: HTMLElement is not defined in Node.js. Extend a no-op class there
 // so the module can be imported without crashing in Next.js / Nuxt / SvelteKit.
@@ -116,6 +120,12 @@ export class TypesetP extends _HTMLElement {
 
   private _bool(attr: string): boolean {
     return !this.hasAttribute(attr) || this.getAttribute(attr) !== 'false';
+  }
+
+  private get _lastLine(): LastLineMode {
+    const v = this.getAttribute('last-line');
+    if (v === 'justify' || v === 'ragged') return v;
+    return 'average';
   }
 
   // ── Lifecycle helpers ────────────────────────────────────────────────────
@@ -262,6 +272,8 @@ export class TypesetP extends _HTMLElement {
     const prepared = prepareWithSegments(rest, fontString);
 
     // Step 7: Knuth-Plass DP
+    const lastLine = align === 'justify' ? this._lastLine : 'average';
+
     const lines: KPLine[] = computeOptimalLines(
       prepared.segments,
       prepared.widths,
@@ -270,6 +282,7 @@ export class TypesetP extends _HTMLElement {
       hyphenW,
       align,
       containerWidth,
+      lastLine,
     );
     if (version !== this._version) return;
 
@@ -279,7 +292,7 @@ export class TypesetP extends _HTMLElement {
     const nativeHang = hasNativeHanging(this);
     const hangFn = hangEnabled && !nativeHang ? hangPunctuation : undefined;
 
-    const html = kpLinesToHtml(lines, hangFn, leading, effectiveRatio, align);
+    const html = kpLinesToHtml(lines, hangFn, leading, effectiveRatio, align, lastLine);
 
     if (version !== this._version) return;
 

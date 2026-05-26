@@ -12,7 +12,7 @@
  */
 
 export { TypesetP } from './typeset-p.js';
-export type { TypesetPMode, TypesetPAlign, TypesetPAttributes } from './typeset-p.js';
+export type { TypesetPMode, TypesetPAlign, TypesetPLastLine, TypesetPAttributes } from './typeset-p.js';
 
 // Auto-register when imported as a side-effect.
 import { TypesetP } from './typeset-p.js';

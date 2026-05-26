@@ -66,6 +66,25 @@ describe('computeOptimalLines', () => {
     expect(reconstructed).toBe('the quick brown fox jumps over the lazy dog');
   });
 
+  it('last-line=ragged forces zero extra spacing on the final line', () => {
+    const words = 'one two three four five six seven'.split(' ');
+    const s = segs(words);
+    const w = widths(s);
+    const lines = computeOptimalLines(s, w, 120, SPACE_W, HYPHEN_W, 'justify', undefined, 'ragged');
+    expect(lines[lines.length - 1].wordSpacingExtra).toBe(0);
+  });
+
+  it('last-line=justify stretches the final line to maxExtra', () => {
+    const words = 'one two three four five six seven'.split(' ');
+    const s = segs(words);
+    const w = widths(s);
+    const avgLines = computeOptimalLines(s, w, 120, SPACE_W, HYPHEN_W, 'justify');
+    const justifyLines = computeOptimalLines(s, w, 120, SPACE_W, HYPHEN_W, 'justify', undefined, 'justify');
+    const lastAvg = avgLines[avgLines.length - 1].wordSpacingExtra;
+    const lastJustify = justifyLines[justifyLines.length - 1].wordSpacingExtra;
+    expect(lastJustify).toBeGreaterThanOrEqual(lastAvg);
+  });
+
   it('wordSpacingExtra is 0 on the last line for justify mode', () => {
     const words = 'one two three four five six'.split(' ');
     const s = segs(words);
@@ -165,12 +184,26 @@ describe('kpLinesToHtml', () => {
     expect(html).toContain('&amp;');
   });
 
-  it('does not add text-align:justify to the last line', () => {
+  it('does not add text-align:justify to the last line by default', () => {
     const lines = makeLines(['line one', 'line two']);
     const html = kpLinesToHtml(lines, undefined, undefined, undefined, 'justify');
     const spans = html.split('</span>');
     // Last span (index 1) should NOT contain text-align:justify
     expect(spans[1]).not.toContain('text-align:justify');
+  });
+
+  it('adds text-align:justify to the last line when last-line=justify', () => {
+    const lines = makeLines(['line one', 'line two']);
+    const html = kpLinesToHtml(lines, undefined, undefined, undefined, 'justify', 'justify');
+    const spans = html.split('</span>');
+    expect(spans[1]).toContain('text-align:justify');
+  });
+
+  it('sets text-align:left on the last line when last-line=ragged', () => {
+    const lines = makeLines(['line one', 'line two']);
+    const html = kpLinesToHtml(lines, undefined, undefined, undefined, 'justify', 'ragged');
+    const spans = html.split('</span>');
+    expect(spans[1]).toContain('text-align:left');
   });
 
   it('adds text-align:justify to non-last lines when align=justify', () => {
